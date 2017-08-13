@@ -1,0 +1,49 @@
+/*** Begin Lory styles ***/
+/**
+ * (optional) define here the style definitions which should be applied on the slider container
+ * e.g. width including further controls like arrows etc.
+ */
+.slider {}
+
+.frame {
+    /**
+     * (optional) wrapper width, specifies width of the slider frame.
+     */
+    width: 100%;
+
+    position: relative;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.slides {
+    display: inline-block;
+}
+
+li.js_slide {
+    position: relative;
+    display: inline-block;
+}
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    margin-top: -25px;
+    display: block;
+    cursor: pointer;
+}
+
+.next {
+    right: -25px;
+}
+
+.prev {
+    left: -25px;
+}
+
+.next svg, .prev svg {
+    width: 25px;
+}
+/*** End Lory styles ***/

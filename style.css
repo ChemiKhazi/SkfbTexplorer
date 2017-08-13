@@ -7,9 +7,44 @@
 	padding: 0
 }
 
-#texture-images {
+#texture_carousel
+{
 	position: absolute;
-	width: 100%;
-	bottom: 0px;
-	z-index: 100;
+	bottom: 20px;
+	left: 50%;
+	margin-right: -50%;
+	transform: translate(-50%, 0%);
+	z-index: 0;
+	margin: 0 auto;
+	width: 70%;
+	height: 200px;
+}
+
+.texture-slot {
+	display: inline-block;
+	height: 200px;
+	font-size: 13px;
+	font-family: "Open Sans", sans-serif;
+	color: #bbb
+}
+
+.texture-slot ul.texture-info {
+	border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.75);
+	list-style: none;
+    padding: 5px !important;
+    padding-start: 5px !important;
+    -webkit-padding-start: 5px !important;
+}
+
+.texture-info li {
+	margin: 0;
+	padding: 0;
+	line-height: 15px;
+}
+
+.texture-slot img {
+	margin: 0 auto;
+	height: 150px;
+	display: block;
 }

@@ -2,110 +2,37 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Sketchfab Viewer API example</title>
+    <title>Sketchfab Texture Viewer</title>
 
-    <!-- Insert this script -->
-    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.0.1.js"></script>
-    <script type="text/javascript" src="SketchfabAPIUtility.js"></script>
+    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.0.1.js">
+    </script>
+    <script type="text/javascript" src="hammer.min.js"></script>
+    <script type="text/javascript" src="lory.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lory.css">
 </head>
 
 <body>
     <!-- Insert an empty iframe -->
     <iframe src="" id="api-frame" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true">
     </iframe>
-    <div id="texture-images">
+
+    <div class="slider js_slider" id="texture_carousel">
+        <div class="frame js_frame">
+            <ul id="texture-images" class="slides js_slides">
+            </ul>
+        </div>
+        <span class="js_prev prev">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M302.67 90.877l55.77 55.508L254.575 250.75 358.44 355.116l-55.77 55.506L143.56 250.75z"/></g></svg>
+        </span>
+        <span class="js_next next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M199.33 410.622l-55.77-55.508L247.425 250.75 143.56 146.384l55.77-55.507L358.44 250.75z"/></g></svg>
+        </span>
     </div>
 
     <!-- Initialize the viewer -->
-    <script type="text/javascript">
-    String.prototype.format = String.prototype.f = function() {
-        var s = this,
-            i = arguments.length;
-
-        while (i--) {
-            s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-        }
-        return s;
-    };
-
-    var iframe = document.getElementById( 'api-frame' );
-    var version = '1.0.0';
-    var urlid = 'faf2095cc3a247a7a8455498642b5450';
-
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('model'))
-        urlid = urlParams.get('model')
-
-    var client = new Sketchfab( version, iframe );
-
-    client.init( urlid, {
-        success: function onSuccess( api ){
-            api.start();
-            api.addEventListener( 'viewerready', function() {
-
-                api.getMaterialList( function( err, materials ) {
-                    // Filter the material list  for ones with textures
-                    texture_list = {}
-                    materials.forEach(function(material){
-                        //material.name
-                        Object.keys(material.channels).forEach(function(channel)
-                        {
-                            channel_data = material.channels[channel]
-                            if (channel_data.enable == false || channel_data.texture == undefined)
-                                return
-                            check_list_keys = Object.keys(texture_list)
-                            texture_uid = channel_data.texture.uid
-                            if (check_list_keys.includes(texture_uid) == false)
-                                texture_list[texture_uid] = {mat_channels:[]}
-
-                            texture_mat_list = texture_list[texture_uid].mat_channels
-                            if (texture_mat_list.includes(channel) == false)
-                                texture_mat_list.push(channel)
-                        })
-                    })
-                    
-                    console.log(texture_list)
-
-                    // Retrieve the textures to match against material list
-                    img_div = document.getElementById("texture-images")
-                    api.getTextureList( function( err, textures ) {
-                        texture_list_keys = Object.keys(texture_list)
-                        textures.forEach(function(texture){
-                            if (texture_list_keys.includes(texture.uid) == false)
-                                return
-                            base_images = texture.images.filter(function(image){
-                                return Object.keys(image.options).length == 0
-                            })
-                            max_size = 0
-                            max_index = 0
-                            base_images.forEach(function(img, index){
-                                if (img.width > max_size)
-                                {
-                                    max_size = img.width
-                                    max_index = index
-                                }
-                            })
-
-                            target_img = base_images[max_index].url
-                            img_element = document.createElement("img")
-                            img_element.src = target_img
-                            img_div.appendChild(img_element)
-                            console.log("{0} - {1}, {2}".f(texture.uid, texture.name, target_img))
-                            console.log(texture_list[texture.uid].mat_channels)
-                        })
-                    } );
-                } );
-
-            } );
-        },
-        error: function onError() {
-            console.log( 'Viewer error' );
-        },
-        preload: 1
-    } );
-    </script>
+    <script type="text/javascript" src="app.js"></script>
 </body>
 </html>
