@@ -26,7 +26,7 @@ client.init( urlid, {
     error: function onError() {
         console.log( 'Viewer error' );
     },
-    preload: 1
+    preload: 0
 } );
 
 function handle_viewer_ready(api){
