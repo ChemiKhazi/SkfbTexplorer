@@ -43,8 +43,36 @@
 	line-height: 15px;
 }
 
+.texture-slot .img-frame {
+	background: url("transparent-marker.png");
+	margin: auto 5px;
+	border-radius: 10px;
+}
+
 .texture-slot img {
 	margin: 0 auto;
 	height: 150px;
 	display: block;
+	image-rendering: auto;
+}
+
+.texture-slot div.material-info {
+	display: none;
+	line-height: 15px;
+	position: absolute;
+	bottom: 0px;
+	left: 50%;
+	transform: translate(-50%, -10%);
+	height: 60%;
+	width: 70%;
+	padding: 10px;
+	border-radius: 10px;
+	background: rgba(0,0,0,0.8);=
+}
+
+div.material-info ul {
+	list-style: square;
+    padding: 0 2em !important;
+    padding-start: 1em !important;
+    -webkit-padding-start: 1em !important;
 }

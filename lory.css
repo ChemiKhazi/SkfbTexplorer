@@ -36,14 +36,14 @@ li.js_slide {
 }
 
 .next {
-    right: -25px;
+    right: -8em;
 }
 
 .prev {
-    left: -25px;
+    left: -8em;
 }
 
 .next svg, .prev svg {
-    width: 25px;
+    width: 8em;
 }
 /*** End Lory styles ***/

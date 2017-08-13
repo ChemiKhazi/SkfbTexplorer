@@ -93,9 +93,27 @@ function handle_viewer_ready(api){
 
                 slot_div.appendChild(info_list)
 
+                img_frame = document.createElement("div")
+                img_frame.classList.add("img-frame")
+
                 img_element = document.createElement("img")
                 img_element.src = target_img
-                slot_div.appendChild(img_element)
+
+                img_frame.appendChild(img_element)
+                slot_div.appendChild(img_frame)
+
+                mat_frame = document.createElement("div")
+                mat_frame.classList.add("material-info")
+                mat_frame.appendChild(document.createTextNode("Used In"))
+                mat_ul = document.createElement("ul")
+                texture_list[texture.uid].mat_channels.forEach(function(mat_name){
+                    mat_li = document.createElement("li")
+                    mat_li.appendChild(document.createTextNode(mat_name))
+                    mat_ul.appendChild(mat_li)
+                });
+                mat_frame.appendChild(mat_ul)
+
+                slot_div.appendChild(mat_frame)
 
                 texture_slots.appendChild(slot_div)
 
@@ -103,10 +121,11 @@ function handle_viewer_ready(api){
                 console.log(texture)
                 console.log(texture_list[texture.uid].mat_channels)
             })
-
+            
             var carousel = document.querySelector('#texture_carousel');
             carousel_ctrl = lory(carousel, {
-                rewind: true
+                rewind: true,
+                enableMouseEvents: true
             });
             carousel_ctrl.reset()
         });
