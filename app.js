@@ -53,6 +53,13 @@ function handle_viewer_ready(api){
         
         console.log(texture_list)
 
+        function full_img_callback(full_url) {
+          return function() {
+            console.log(full_url);
+            window.open(full_url)
+          };
+        }
+
         // Retrieve the textures to match against material list
         texture_slots = document.getElementById("texture-images")
         api.getTextureList( function( err, textures ) {
@@ -60,9 +67,25 @@ function handle_viewer_ready(api){
             textures.forEach(function(texture){
                 if (texture_list_keys.includes(texture.uid) == false)
                     return
-                base_images = texture.images.filter(function(image){
-                    return Object.keys(image.options).length == 0
+
+                thumb_width = 0
+                thumb_height = 0
+                thumb_url = ""
+                base_images = []
+                texture.images.forEach(function(img) {
+                    if (Object.keys(img.options).length == 0)
+                        base_images.push(img)
+                    if (img.width <= 256 && img.height <= 256 && !img.url.endsWith(".gz")){
+                        if (img.width > thumb_width || img.height > thumb_height){
+                            thumb_width = img.width
+                            thumb_height = img.height
+                            thumb_url = img.url
+                        }   
+                    }
                 })
+                // base_images = texture.images.filter(function(image){
+                //     return Object.keys(image.options).length == 0
+                // })
                 max_width = 0
                 max_height = 0
                 max_index = 0
@@ -74,8 +97,6 @@ function handle_viewer_ready(api){
                         max_index = index
                     }
                 })
-
-                target_img = base_images[max_index].url
                 
                 slot_div = document.createElement("li")
                 slot_div.classList.add("texture-slot", "js_slide")
@@ -97,34 +118,36 @@ function handle_viewer_ready(api){
                 img_frame.classList.add("img-frame")
 
                 img_element = document.createElement("img")
-                img_element.src = target_img
+                img_element.src = thumb_url
 
                 img_frame.appendChild(img_element)
                 slot_div.appendChild(img_frame)
 
                 mat_frame = document.createElement("div")
                 mat_frame.classList.add("material-info")
-                mat_frame.appendChild(document.createTextNode("Used In"))
-                mat_ul = document.createElement("ul")
-                texture_list[texture.uid].mat_channels.forEach(function(mat_name){
-                    mat_li = document.createElement("li")
-                    mat_li.appendChild(document.createTextNode(mat_name))
-                    mat_ul.appendChild(mat_li)
-                });
-                mat_frame.appendChild(mat_ul)
+
+                full_scr = document.createElement("i")
+                full_scr.classList.add("icon-fullscreen")
+                
+                full_img_url = base_images[max_index].url
+                full_scr.addEventListener("click", full_img_callback(full_img_url))
+
+                mat_frame.appendChild(full_scr)
+                // mat_ul = document.createElement("ul")
+                // texture_list[texture.uid].mat_channels.forEach(function(mat_name){
+                //     mat_li = document.createElement("li")
+                //     mat_li.appendChild(document.createTextNode(mat_name))
+                //     mat_ul.appendChild(mat_li)
+                // });
+                // mat_frame.appendChild(mat_ul)
 
                 slot_div.appendChild(mat_frame)
 
                 texture_slots.appendChild(slot_div)
-
-                console.log("{0} - {1}, {2}".f(texture.uid, texture.name, target_img))
-                console.log(texture)
-                console.log(texture_list[texture.uid].mat_channels)
             })
             
             var carousel = document.querySelector('#texture_carousel');
             carousel_ctrl = lory(carousel, {
-                rewind: true,
                 enableMouseEvents: true
             });
             carousel_ctrl.reset()

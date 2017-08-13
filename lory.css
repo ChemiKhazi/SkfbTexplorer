@@ -25,6 +25,7 @@
 li.js_slide {
     position: relative;
     display: inline-block;
+    width: 200px;
 }
 
 .prev, .next {

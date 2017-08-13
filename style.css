@@ -23,6 +23,7 @@
 .texture-slot {
 	display: inline-block;
 	height: 200px;
+	width: 200px;
 	font-size: 13px;
 	font-family: "Open Sans", sans-serif;
 	color: #bbb
@@ -32,9 +33,12 @@
 	border-radius: 10px;
     background-color: rgba(0, 0, 0, 0.75);
 	list-style: none;
-    padding: 5px !important;
+	width: 190px;
+	margin: 0;
+	padding: 5px;
+    /*padding: 5px !important;
     padding-start: 5px !important;
-    -webkit-padding-start: 5px !important;
+    -webkit-padding-start: 5px !important;*/
 }
 
 .texture-info li {
@@ -57,17 +61,32 @@
 }
 
 .texture-slot div.material-info {
-	display: none;
-	line-height: 15px;
+	font-size: 20px;
 	position: absolute;
 	bottom: 0px;
-	left: 50%;
-	transform: translate(-50%, -10%);
-	height: 60%;
-	width: 70%;
-	padding: 10px;
+	left: 0px;
+	text-align: right;
+	height: 100%;
+	width: 100%;
+	opacity: 0;
+
+	-webkit-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	-webkit-transition-property: opacity;
+	transition-property: opacity;
+}
+
+.texture-slot div.material-info i {
+	position: absolute;
+	bottom: 15px;
+	right: 10px;
+	background: rgba(0,0,0,0.8);
+	padding: 8px;
 	border-radius: 10px;
-	background: rgba(0,0,0,0.8);=
+}
+
+.texture-slot div.material-info:hover {
+	opacity: 1;
 }
 
 div.material-info ul {
