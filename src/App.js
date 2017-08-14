@@ -15,7 +15,8 @@ class App extends Component {
     this.state = {
       modelId: model_id,
       materials: null,
-      textures: null
+      textures: null,
+      api: null
     };
 
   }
@@ -54,7 +55,8 @@ class App extends Component {
         textureList = app.processTextureList(textureList, textures);
         app.setState({
           materials: materials,
-          textures: textureList
+          textures: textureList,
+          api: api
         });
       });
     });
@@ -86,8 +88,11 @@ class App extends Component {
         }
 
         var mat_list = textureList[texture_uid].materials.filter((entry) => entry.mat_id === mat_idx)[0];
-        if (mat_list.channels.includes(channel) === false)
-          mat_list.channels.push(channel)
+        if (!mat_list === false &&
+          !mat_list.channels === false &&
+          mat_list.channels.includes(channel) === false) {
+            mat_list.channels.push(channel)
+          }
 
         if (channel_data.texture.magFilter === 'NEAREST' ||
             channel_data.texture.minFilter === 'NEAREST') {
