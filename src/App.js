@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import SketchfabView from './SketchfabView'
+import SketchfabView from './SketchfabView';
+import Carousel from './Carousel';
+import TextureSlot from './TextureSlot'
 import './App.css';
 
 class App extends Component {
@@ -7,7 +9,7 @@ class App extends Component {
   constructor() {
     super();
 
-    var model_id = 'faf2095cc3a247a7a8455498642b5450';
+    var model_id = 'a7cb34de4c044092b094d73953ab5acb';
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('model'))
         model_id = urlParams.get('model')
@@ -22,6 +24,10 @@ class App extends Component {
   }
 
   render() {
+    var textureSlots = null;
+    if (!this.state.textures === false) {
+      textureSlots = this.state.textures.map((tex) => (<TextureSlot value={tex} />));
+    }
     var app = this;
     return (
       <div className="App">
@@ -30,6 +36,7 @@ class App extends Component {
           model={this.state.modelId}
           apiCallback={(api) => app.getApiCallback(api)}
           />
+        <Carousel value={textureSlots}/>
       </div>
     );
   }
@@ -75,7 +82,6 @@ class App extends Component {
         var texture_uid = channel_data.texture.uid;
 
         if (check_list_keys.includes(texture_uid) === false) {
-          console.log("Creating new entry");
           textureList[texture_uid] = {
             uid: texture_uid,
             materials: [ {mat_id:mat_idx, channels:[]} ],
@@ -83,14 +89,14 @@ class App extends Component {
             width: 0,
             height: 0,
             source_url: null,
-            thumb_url: null
+            thumb_url: null,
+            name: null
           };
         }
 
         var mat_list = textureList[texture_uid].materials.filter((entry) => entry.mat_id === mat_idx)[0];
-        if (!mat_list === false &&
-          !mat_list.channels === false &&
-          mat_list.channels.includes(channel) === false) {
+        if (!mat_list === false && !mat_list.channels === false &&
+            mat_list.channels.includes(channel) === false) {
             mat_list.channels.push(channel)
           }
 
@@ -145,6 +151,7 @@ class App extends Component {
       textureData.height = max_height;
       textureData.thumb_url = thumb_url;
       textureData.source_url = source_url;
+      textureData.name = texture.name;
 
       outputList.push(textureData);
     }); // End texture process loop

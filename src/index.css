@@ -1,7 +1,9 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+	font-size: 13px;
+	font-family: "Open Sans", sans-serif;
+	color: #bbb
 }
 
 #sketch-view {
@@ -14,3 +16,32 @@ body {
 	margin: 0;
 	padding: 0
 }
+
+.carousel {
+  z-index: 10 !important;
+	position: absolute;
+	bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  height: 190px;
+  width: 70%;
+}
+
+.carousel-content { z-index: 13 !important; text-align: center !important; }
+
+.texture-info {
+  height: 30px;
+  padding: 0.4em;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+div.texture-display {
+  background: url("./transparent-marker.png");
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.texture-display img {height: 150px;}
+.texture-display img.tex-is-pixel { image-rendering: pixelated;}

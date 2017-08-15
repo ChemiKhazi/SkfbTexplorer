@@ -1,0 +1,32 @@
+.carousel-content {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.carousel-item {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.carousel-controls {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.carousel-controls .carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.carousel-prev { left: -50px; }
+.carousel-next { right: -50px; }

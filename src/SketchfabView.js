@@ -5,7 +5,7 @@ class SketchfabView extends Component {
 
   render() {
 		return (
-			<iframe src="" id={this.props.id} title={this.props.id} allowfullScreen>
+			<iframe src="" id={this.props.id} title={this.props.id} allowFullScreen>
 			</iframe>
 		);
 	}
