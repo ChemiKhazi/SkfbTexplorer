@@ -25,20 +25,36 @@ class App extends Component {
 
   render() {
     var textureSlots = null;
-    if (!this.state.textures === false) {
-      textureSlots = this.state.textures.map((tex) => (<TextureSlot value={tex} />));
-    }
     var app = this;
+    if (!this.state.textures === false) {
+      textureSlots = this.state.textures.map((tex, i) => (
+        <TextureSlot
+          value={tex}
+          onOpen={()=>app.viewTexture(i)}
+          onSwap={()=>app.swapTexture(i)}
+          />
+      ));
+    }
     return (
       <div className="App">
         <SketchfabView
           id="sketch-view"
           model={this.state.modelId}
+          autoStart={true}
           apiCallback={(api) => app.getApiCallback(api)}
           />
         <Carousel value={textureSlots}/>
       </div>
     );
+  }
+
+  viewTexture(textureIndex) {
+    console.log("open", textureIndex);
+    window.open(this.state.textures[textureIndex].source_url)
+  }
+
+  swapTexture(textureIndex) {
+    console.log("swap", textureIndex);
   }
 
   getApiCallback(api) {

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './textureslot.css';
 
 class TextureSlot extends Component {
   render() {
@@ -15,6 +16,14 @@ class TextureSlot extends Component {
         </div>
         <div className="texture-display">
           <img src={texture.thumb_url} alt={texture.name} className={imgStyle} />
+          <div className="texture-controls">
+            <button className="tex-zoom" onClick={() => this.props.onOpen()}>
+              <i className="fa fa-search" aria-hidden="true"></i>
+            </button>
+            <button className="tex-update" onClick={() => this.props.onSwap()}>
+              <i className="fa fa-folder-open-o" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
       </div>
     );

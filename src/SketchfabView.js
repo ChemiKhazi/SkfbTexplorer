@@ -14,15 +14,53 @@ class SketchfabView extends Component {
     var iframe = document.getElementById(this.props.id);
 		var version = '1.0.0';
 		var client = new Sketchfab( version, iframe );
-    var app = this;
-    client.init( this.props.model, {
-		    success: (api) => {
-		        api.start();
-		        api.addEventListener( 'viewerready', () => {app.props.apiCallback(api)} );
-		    },
-		    error: () => { console.log( 'Viewer error' ) },
-		    preload: 0
-		});
+    var component = this;
+
+    var options = {};
+    var internalOptions = {
+	    success: (api) => {
+          if (component.props.autoStart)
+            api.start();
+          if (!component.props.apiCallback === false)
+            api.addEventListener('viewerready', () => { component.props.apiCallback(api) });
+	    },
+      error: () => {
+        console.log( 'Viewer error' );
+        if (!component.propos.errorCallback === false)
+          component.props.errorCallback();
+      }
+    }
+
+    // Merge the passed option
+    if (!this.props.options === false) {
+      var optKeys = Object.keys(this.props.options);
+      if (optKeys.includes("success")) {
+        options["success"] = (api) => {
+          component.props.options.success(api);
+          internalOptions.success(api);
+        };
+      }
+      else {
+        options["success"] = internalOptions.success;
+      }
+
+      if (optKeys.includes("error")) {
+        options["error"] = () => {
+          component.props.options.error();
+          internalOptions.error();
+        }
+      }
+      else {
+        options["error"] = internalOptions.error;
+      }
+      options = Object.assign({}, this.props.options, options);
+    }
+    // No option to merge, just use internalOptions
+    else {
+      options = internalOptions;
+    }
+
+    client.init(this.props.model, options);
   }
 }
 

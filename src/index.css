@@ -28,20 +28,3 @@ body {
 }
 
 .carousel-content { z-index: 13 !important; text-align: center !important; }
-
-.texture-info {
-  height: 30px;
-  padding: 0.4em;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  background: rgba(0, 0, 0, 0.8);
-}
-
-div.texture-display {
-  background: url("./transparent-marker.png");
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-.texture-display img {height: 150px;}
-.texture-display img.tex-is-pixel { image-rendering: pixelated;}
