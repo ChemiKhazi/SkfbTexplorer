@@ -3,6 +3,7 @@ import SketchfabView from './SketchfabView';
 import Carousel from './Carousel';
 import TextureSlot from './TextureSlot';
 import TextureSwap from './TextureSwap';
+import ModelOpen from './ModelOpen';
 import './App.css';
 
 class App extends Component {
@@ -57,8 +58,24 @@ class App extends Component {
           onSwap={(url) => self.swapTextureOperation(url)}
           onReset={() => self.resetTexture()}
           />
+        <ModelOpen
+          model={this.state.modelId}
+          onOpen={(url) => self.openModelUrl(url)}
+          />
       </div>
     );
+  }
+
+  openModelUrl(url) {
+    if (this.state.modelId === url)
+      return;
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('model'))
+      urlParams.delete('model');
+    urlParams.append('model', url);
+    
+    window.location.search = urlParams.toString();
   }
 
   viewTexture(textureIndex) {
