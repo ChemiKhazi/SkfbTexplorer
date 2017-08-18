@@ -1,0 +1,77 @@
+.sketchfab-tex-swap {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100 !important;
+    background: rgba(0, 0, 0, 0.75);
+    opacity: 1;
+    transition-duration: 0.3s;
+    transition-property: opacity;
+    display: block;
+}
+
+.sketchfab-tex-swap.ui-closed{
+  display: none;
+  opacity: 0;
+}
+
+.swap-ui {
+  height: 50%;
+  width: 50%;
+  color: #000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 2em;
+  padding: 3em;
+}
+
+.swap-ui .swap-texture-info ul {
+  list-style: none;
+  font-size: 1.2em;
+  padding: 0;
+}
+
+#swapDropZone {
+  height: 180px;
+  width: 90%;
+  border: 2px dashed #999;
+  margin: 5px auto;
+  padding: 0.5em 0;
+  border-radius: 10px;
+}
+
+#swapDropZone.drag-enter {
+  border: 4px dashed;
+}
+
+#swapDropZone img {
+  display: block;
+  margin: auto;
+  height: 100%;
+  line-height: 90px;
+  vertical-align: middle;
+}
+
+#swapDropZone img.is-pixel { image-rendering: pixelated; }
+
+.swap-ui input {
+  width: 70%;
+  height: 1.5em;
+}
+.swap-ui label {
+  width: 20%;
+  text-align: right;
+}
+
+.swap-ui>div>button { display: block; }
+
+.swap-ui button {
+  height: 2.5em;
+  width: 90%;
+  margin: 0.5em auto;
+}

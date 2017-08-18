@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import SketchfabView from './SketchfabView';
 import Carousel from './Carousel';
-import TextureSlot from './TextureSlot'
+import TextureSlot from './TextureSlot';
+import TextureSwap from './TextureSwap';
 import './App.css';
 
 class App extends Component {
@@ -18,32 +19,44 @@ class App extends Component {
       modelId: model_id,
       materials: null,
       textures: null,
-      api: null
+      api: null,
+      focusIndex: -1
     };
 
   }
 
   render() {
     var textureSlots = null;
-    var app = this;
+    var self = this;
     if (!this.state.textures === false) {
       textureSlots = this.state.textures.map((tex, i) => (
         <TextureSlot
           value={tex}
-          onOpen={()=>app.viewTexture(i)}
-          onSwap={()=>app.swapTexture(i)}
+          onOpen={()=>self.viewTexture(i)}
+          onSwap={()=>self.swapTextureUI(i)}
           />
       ));
     }
+
+    var swapTexture = null;
+    if (this.state.focusIndex > -1 && this.state.focusIndex < this.state.textures.length)
+      swapTexture = this.state.textures[this.state.focusIndex];
+
     return (
       <div className="App">
         <SketchfabView
           id="sketch-view"
           model={this.state.modelId}
           autoStart={true}
-          apiCallback={(api) => app.getApiCallback(api)}
+          apiCallback={(api) => self.getApiCallback(api)}
           />
         <Carousel value={textureSlots}/>
+        <TextureSwap
+          edit={swapTexture}
+          onClose={() => self.setState({focusIndex: -1})}
+          onSwap={(url) => self.swapTextureOperation(url)}
+          onReset={() => self.resetTexture()}
+          />
       </div>
     );
   }
@@ -53,8 +66,49 @@ class App extends Component {
     window.open(this.state.textures[textureIndex].source_url)
   }
 
-  swapTexture(textureIndex) {
+  swapTextureUI(textureIndex) {
     console.log("swap", textureIndex);
+    this.setState({
+      focusIndex: textureIndex
+    })
+  }
+
+  swapTextureOperation(textureUrl) {
+    var index = this.state.focusIndex;
+    var targetTexture = this.state.textures[index];
+    var targetUid = targetTexture.uid;
+
+    var self = this;
+
+    this.state.api.updateTexture(textureUrl, targetUid, (err, textureUid) => {
+      var updateTextures = self.state.textures;
+      updateTextures[index].replaceUrl = textureUrl;
+      self.setState({
+        textures: updateTextures,
+        focusIndex: -1
+      });
+    });
+  }
+
+  resetTexture() {
+      var index = this.state.focusIndex;
+      var targetTexture = this.state.textures[index];
+      if (!targetTexture.replaceUrl)
+        return;
+
+      var targetUid = targetTexture.uid;
+      var self = this;
+
+      this.state.api.updateTexture(targetTexture.source_url, targetUid, (err, textureUid) => {
+        var updateTextures = self.state.textures;
+        delete updateTextures[index]['replaceUrl'];
+        self.setState({
+          textures: updateTextures,
+          focusIndex: -1
+        });
+      });
+
+      this.setState({focusIndex: -1});
   }
 
   getApiCallback(api) {

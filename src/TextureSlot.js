@@ -7,6 +7,9 @@ class TextureSlot extends Component {
     var imgStyle = null;
     if (texture.is_pixel)
       imgStyle = "tex-is-pixel";
+    var imgUrl = texture.thumb_url;
+    if (!texture.replaceUrl === false)
+      imgUrl = texture.replaceUrl;
 
     return (
       <div className="texture-slot">
@@ -15,7 +18,7 @@ class TextureSlot extends Component {
           <div className="texture-sizes">{texture.width} x {texture.height}</div>
         </div>
         <div className="texture-display">
-          <img src={texture.thumb_url} alt={texture.name} className={imgStyle} />
+          <img src={imgUrl} alt={texture.name} className={imgStyle} />
           <div className="texture-controls">
             <button className="tex-zoom" onClick={() => this.props.onOpen()}>
               <i className="fa fa-search" aria-hidden="true"></i>
