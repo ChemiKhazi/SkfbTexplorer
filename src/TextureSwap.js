@@ -15,6 +15,7 @@ class TextureSwap extends Component {
   render() {
     var classNames = ['sketchfab-tex-swap'];
     var info = null;
+    var imgSrc = null;
     var imgClass = null;
     var resetBtn = null;
     if (!this.props.edit) {
@@ -29,10 +30,15 @@ class TextureSwap extends Component {
           </ul>
         </div>
       );
+
+      imgSrc = this.props.edit.thumb_url;
       if (this.props.edit.is_pixel)
         imgClass = 'is-pixel';
-      if (!this.props.edit.replaceUrl === false)
+
+      if (!this.props.edit.replaceUrl === false) {
+        imgSrc = this.props.edit.replaceUrl;
         resetBtn = (<button onClick={() => this.handleReset()}>Reset Texture</button>);
+      }
     }
 
     return (
@@ -45,7 +51,7 @@ class TextureSwap extends Component {
           </div>*/}
           <div className='swap-file'>
             <div id='swapDropZone' className='drag-out'>
-              <img alt='Drop Swap Texture Here' className={imgClass} />
+              <img alt='Drop Swap Texture Here' className={imgClass} src={imgSrc} />
             </div>
             <label>File <input id='swapImageFile' type='file' /></label>
             <button onClick={() => this.handleSwapFile()}>Swap Texture</button>
@@ -104,35 +110,44 @@ class TextureSwap extends Component {
       self.state.dropTarget.classList.add('drag-out');
       var dt = e.dataTransfer;
       var files = dt.files;
-      if (files.length < 1) {
-        var preview = document.querySelector('#swapDropZone>img');
-        preview.src = null;
-        return;
-      }
-
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        var imageType = /^image\//;
-        if (!imageType.test(file.type))
-          continue;
-        var reader = new FileReader();
-        reader.onload = (e) => {
-          var preview = document.querySelector('#swapDropZone>img');
-          preview.src = e.target.result;
-          self.setState({
-            textureUrl: e.target.result
-          });
-        };
-        reader.readAsDataURL(file);
-        break;
-      }
+      self.handleFilesUpdate(files);
       self.state.fileTarget.files = files;
+    });
+
+    var fileTarget = document.getElementById('swapImageFile');
+    fileTarget.addEventListener('change', (e) => {
+      self.handleFilesUpdate(self.state.fileTarget.files);
     });
 
     this.setState({
       dropTarget: dropTarget,
-      fileTarget: document.getElementById('swapImageFile')
+      fileTarget: fileTarget
     });
+  }
+
+  handleFilesUpdate(files) {
+    if (files.length < 1) {
+      var preview = document.querySelector('#swapDropZone>img');
+      preview.src = null;
+      return;
+    }
+
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      var imageType = /^image\//;
+      if (!imageType.test(file.type))
+        continue;
+      var reader = new FileReader();
+      reader.onload = (e) => {
+        var preview = document.querySelector('#swapDropZone>img');
+        preview.src = e.target.result;
+        this.setState({
+          textureUrl: e.target.result
+        });
+      };
+      reader.readAsDataURL(file);
+      break;
+    }
   }
 
   stopEventProp(e) {
