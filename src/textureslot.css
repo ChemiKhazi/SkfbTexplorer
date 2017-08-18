@@ -6,14 +6,23 @@
   background: rgba(0, 0, 0, 0.8);
 }
 
-div.texture-display {
+.texture-slot {
+  position: relative;
+  float: left;
+  height: 100%;
+  width: auto !important;
+  min-width: 150px;
+}
+
+.texture-slot > .texture-display {
   background: url("./transparent-marker.png");
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  position: relative;
+  height: 150px;
+  bottom: 0;
 }
 
-.texture-display img {height: 150px;}
+.texture-display img { height: 150px; padding: 0; }
 .texture-display img.tex-is-pixel { image-rendering: pixelated;}
 .texture-controls > button {
   position: absolute;
@@ -27,8 +36,9 @@ div.texture-display {
   border-radius: 5px;
   font-size: 1.5em;
 }
-.texture-controls .tex-zoom { transform: translate(55%, 0); }
-.texture-controls .tex-update { transform: translate(-55%, 0);}
+.texture-controls .tex-zoom { transform: translate(3px, 0); }
+.texture-controls .tex-update { transform: translate(-33px, 0);}
+.texture-controls .tex-update i { margin-left: -3px !important; }
 
 .texture-controls {
   width: 100%;
@@ -42,5 +52,5 @@ div.texture-display {
 }
 
 .texture-controls:hover {
-  opacity: 0.8;
+  opacity: 1;
 }

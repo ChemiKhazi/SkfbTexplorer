@@ -6,8 +6,6 @@
 
 .carousel.carousel-empty { opacity: 0 !important; }
 
-.carousel-scroller { overflow: hidden; }
-
 .carousel-scroller, .carousel-content {
   width: 100%;
   height: 100%;
@@ -18,9 +16,14 @@
   white-space: nowrap;
 }
 
+.carousel-scroller { overflow: hidden; }
+.carousel-content { width: auto !important; }
+
 .carousel-item {
   display: inline-block;
   margin: 0 5px;
+  height: 100%;
+  width: auto !important;
 }
 
 .carousel-controls {
@@ -30,6 +33,8 @@
   top: 0;
   left: 0;
 }
+
+.carousel-controls.hide-controls { display: none; }
 
 .carousel-controls .carousel-btn {
   position: absolute;

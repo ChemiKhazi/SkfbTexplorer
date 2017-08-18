@@ -47,6 +47,8 @@ class Carousel extends Component {
       );
     }
 
+    document.addEventListener('mouseUp', this.handleInputUp);
+
     return (
       <div className={classNames.join(' ')}
         {...this.getTouchEvents()}
@@ -61,10 +63,17 @@ class Carousel extends Component {
 
   componentDidMount() {
     var content = document.querySelector(".carousel > .carousel-scroller > .carousel-content");
-    console.log("content " + content);
+    // var scrollArea = document.querySelector(".carousel > .carousel-scroller");
+    // var contentStyle = window.getComputedStyle(content, null);
+    // var
+    // var contentWidth =
     this.setState({
       scrollContent: content
     });
+  }
+
+  componentDidUpdate() {
+    console.log("Carousel updated");
   }
 
   getMouseEvents() {
@@ -79,12 +88,18 @@ class Carousel extends Component {
           startY: e.clientY,
         };
 
+        var contentStyle = window.getComputedStyle(self.state.scrollContent, null);
+        touchObject.width = contentStyle['width'].replace('px','');
+        var scrollerStyle = window.getComputedStyle(document.querySelector('.carousel .carousel-scroller'), null);
+        var maxScroll = touchObject.width - scrollerStyle['width'].replace('px','');
+
         if (!self.state.touchObject === false) {
           touchObject.originX = self.state.touchObject.originX;
           touchObject.originY = self.state.touchObject.originY;
         }
 
         self.setState({
+          maxScroll: maxScroll,
           dragging: true,
           touchObject: touchObject
         });
@@ -97,30 +112,12 @@ class Carousel extends Component {
         var updateTouch = self.state.touchObject;
         var xDelta = (e.clientX - updateTouch.startX);
         var targetPosX = updateTouch.originX + xDelta;
-        self.state.scrollContent.style.transform = "translate({x}px, 0)".replace("{x}", targetPosX);
+        var scrollContent = self.state.scrollContent;
+        scrollContent.style.transform = "translate({x}px, 0)".replace("{x}", targetPosX);
         self.setState({touchObject: updateTouch})
       },
-      onMouseUp(e) {
-        if (!self.state.dragging) {
-          return;
-        }
-        var updateTouch = self.state.touchObject;
-        var xDelta = (e.clientX - updateTouch.startX);
-        var targetPosX = updateTouch.originX + xDelta;
-        updateTouch.originX = targetPosX;
-        self.setState({
-          dragging: false,
-          touchObject: updateTouch
-        });
-      },
-      onMouseLeave(e) {
-        if (!self.state.dragging) {
-          return;
-        }
-        self.setState({
-          dragging: false,
-        });
-      },
+      onMouseUp(e) { self.resetDrag(e); },
+      onMouseLeave(e) { },
     };
   }
 
@@ -149,6 +146,24 @@ class Carousel extends Component {
     };
   }
 
+  resetDrag(e) {
+    if (!this.state.dragging) {
+      return;
+    }
+    var updateTouch = this.state.touchObject;
+    var xDelta = (e.clientX - updateTouch.startX);
+    var targetPosX = updateTouch.originX + xDelta;
+    targetPosX = Math.min(targetPosX, 0);
+    targetPosX = Math.max(targetPosX, -this.state.maxScroll);
+    updateTouch.originX = targetPosX;
+    var scrollContent = this.state.scrollContent;
+    scrollContent.style.transform = "translate({x}px, 0)".replace("{x}", targetPosX);
+    this.setState({
+      dragging: false,
+      touchObject: updateTouch
+    });
+  }
+
   handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -156,6 +171,12 @@ class Carousel extends Component {
     if (e.nativeEvent) {
       e.nativeEvent.stopPropagation();
     }
+  }
+
+  handleInputUp(e) {
+    if (this.state.dragging === false)
+      return;
+    this.resetDrag(e);
   }
 }
 
