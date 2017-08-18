@@ -1,5 +1,6 @@
 {
   "name": "skfb-react",
+  "homepage": "https://chemikhazi.github.io/sketchfab-tex-swap",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
