@@ -81,6 +81,8 @@ class App extends Component {
     var self = this;
 
     this.state.api.updateTexture(textureUrl, targetUid, (err, textureUid) => {
+      if (!err === false)
+        return;
       var updateTextures = self.state.textures;
       updateTextures[index].replaceUrl = textureUrl;
       self.setState({
@@ -100,6 +102,8 @@ class App extends Component {
       var self = this;
 
       this.state.api.updateTexture(targetTexture.source_url, targetUid, (err, textureUid) => {
+        if (!err === false)
+          return;
         var updateTextures = self.state.textures;
         delete updateTextures[index]['replaceUrl'];
         self.setState({
