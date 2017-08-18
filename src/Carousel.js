@@ -55,7 +55,9 @@ class Carousel extends Component {
       );
     }
 
+    var self = this;
     document.addEventListener('mouseUp', this.handleInputUp);
+    window.addEventListener('resize', (e) => self.calculateScroll());
 
     return (
       <div className={classNames.join(' ')}
@@ -78,6 +80,10 @@ class Carousel extends Component {
   }
 
   componentDidUpdate() {
+    this.calculateScroll();
+  }
+
+  calculateScroll() {
     var scrollArea = document.querySelector(".carousel > .carousel-scroller");
     var content = document.querySelector(".carousel > .carousel-scroller > .carousel-content");
     var scrollStyle = window.getComputedStyle(scrollArea, null);
