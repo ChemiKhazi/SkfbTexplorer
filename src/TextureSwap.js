@@ -45,10 +45,10 @@ class TextureSwap extends Component {
       <div className={classNames.join(' ')}>
         <div className='swap-ui'>
           {info}
-          {/*<div className='swap-url'>
+          <div className='swap-url'>
             <label>URL <input id='swapImageUrl' type='url' /></label>
             <button onClick={() => this.handleSwapURL()}>Swap by URL</button>
-          </div>*/}
+          </div>
           <div className='swap-file'>
             <div id='swapDropZone' className='drag-out'>
               <img alt='Drop Swap Texture Here' className={imgClass} src={imgSrc} />
@@ -63,7 +63,13 @@ class TextureSwap extends Component {
     );
   }
 
-  handleSwapURL() {}
+  handleSwapURL() {
+    var textureUrl = document.getElementById('swapImageUrl').value
+    if (!textureUrl)
+      return;
+    this.resetInputs();
+    this.props.onSwap(textureUrl);
+  }
 
   handleSwapFile() {
     if (!this.state.textureUrl)
