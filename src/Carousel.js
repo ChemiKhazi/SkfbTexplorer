@@ -6,16 +6,27 @@ class Carousel extends Component {
   constructor() {
     super();
     this.state = {
-      touchObject: null,
-      dragging: false,
-      scrollContent: null
+      scrollContent: null,
+      scrollMin: 0,
+      scrollMax: 0
     };
+
+    this.isUpdating = false;
+    this.touchObject = {
+      dragging: false,
+      originX: 0,
+      originY: 0,
+      startX: 0,
+      startY: 0,
+    }
   }
 
   render() {
     var classNames = ["carousel"];
 
     var contents = null;
+    var controls = null;
+
     if (!this.props.value) {
       classNames.push("carousel-empty");
     }
@@ -23,18 +34,15 @@ class Carousel extends Component {
       contents = this.props.value.map(
         (content, index) => (<div className="carousel-item" key={index}>{content}</div>)
       );
-    }
 
-    contents = (
-      <div className="carousel-scroller">
-        <div className="carousel-content">
-          {contents}
+      contents = (
+        <div className="carousel-scroller">
+          <div className="carousel-content">
+            {contents}
+          </div>
         </div>
-      </div>
-    );
+      );
 
-    var controls = null;
-    if (!contents === false) {
       controls = (
         <div className="carousel-controls">
           <span className="carousel-prev carousel-btn">
@@ -61,19 +69,37 @@ class Carousel extends Component {
     );
   } // End render
 
-  componentDidMount() {
-    var content = document.querySelector(".carousel > .carousel-scroller > .carousel-content");
-    // var scrollArea = document.querySelector(".carousel > .carousel-scroller");
-    // var contentStyle = window.getComputedStyle(content, null);
-    // var
-    // var contentWidth =
-    this.setState({
-      scrollContent: content
-    });
+  shouldComponentUpdate() {
+    if (this.isUpdating) {
+      this.isUpdating = false;
+      return false;
+    }
+    return true;
   }
 
   componentDidUpdate() {
-    console.log("Carousel updated");
+    var scrollArea = document.querySelector(".carousel > .carousel-scroller");
+    var content = document.querySelector(".carousel > .carousel-scroller > .carousel-content");
+    var scrollStyle = window.getComputedStyle(scrollArea, null);
+    var contentStyle = window.getComputedStyle(content, null);
+    var scrollWidth = parseFloat(scrollStyle['width'].replace('px', ''));
+    var contentWidth = parseFloat(contentStyle['width'].replace('px',''));
+    var scrollMin = (scrollWidth - contentWidth);
+    var scrollMax = 0;
+    if (contentWidth < scrollWidth) {
+      scrollMin = (scrollWidth / 2) - (contentWidth / 2);
+      scrollMax = (scrollWidth - contentWidth) / 2;
+    }
+
+    content.style.transform = "translate({x}px, 0)".replace("{x}", scrollMax);
+    this.touchObject.originX = scrollMax;
+
+    this.isUpdating = true;
+    this.setState({
+      scrollContent: content,
+      scrollMin: scrollMin,
+      scrollMax: scrollMax
+    });
   }
 
   getMouseEvents() {
@@ -86,35 +112,27 @@ class Carousel extends Component {
           originY: 0,
           startX: e.clientX,
           startY: e.clientY,
+          dragging: true
         };
 
-        var contentStyle = window.getComputedStyle(self.state.scrollContent, null);
-        touchObject.width = contentStyle['width'].replace('px','');
-        var scrollerStyle = window.getComputedStyle(document.querySelector('.carousel .carousel-scroller'), null);
-        var maxScroll = touchObject.width - scrollerStyle['width'].replace('px','');
-
-        if (!self.state.touchObject === false) {
-          touchObject.originX = self.state.touchObject.originX;
-          touchObject.originY = self.state.touchObject.originY;
+        if (!self.touchObject === false) {
+          touchObject.originX = self.touchObject.originX;
+          touchObject.originY = self.touchObject.originY;
         }
 
-        self.setState({
-          maxScroll: maxScroll,
-          dragging: true,
-          touchObject: touchObject
-        });
+        self.touchObject = Object.assign(self.touchObject, touchObject);
         self.handleClick(e);
       },
       onMouseMove(e) {
-        if (!self.state.dragging) {
+        if (!self.touchObject.dragging) {
           return;
         }
-        var updateTouch = self.state.touchObject;
+        var updateTouch = self.touchObject;
         var xDelta = (e.clientX - updateTouch.startX);
         var targetPosX = updateTouch.originX + xDelta;
         var scrollContent = self.state.scrollContent;
         scrollContent.style.transform = "translate({x}px, 0)".replace("{x}", targetPosX);
-        self.setState({touchObject: updateTouch})
+        self.touchObject = Object.assign(self.touchObject, updateTouch);
       },
       onMouseUp(e) { self.resetDrag(e); },
       onMouseLeave(e) { },
@@ -127,13 +145,11 @@ class Carousel extends Component {
       onTouchStart(e) {
         var touchObject = {
           startX: e.touches[0].pageX,
-          startY: e.touches[0].pageY
+          startY: e.touches[0].pageY,
+          dragging: true
         };
 
-        self.setState({
-          dragging: true,
-          touchObject: touchObject
-        });
+        self.touchObject = Object.assign(self.touchObject, touchObject);
         self.handleClick(e);
       },
       onTouchMove(e) {
@@ -147,21 +163,24 @@ class Carousel extends Component {
   }
 
   resetDrag(e) {
-    if (!this.state.dragging) {
+    if (!this.touchObject.dragging) {
       return;
     }
-    var updateTouch = this.state.touchObject;
+    var updateTouch = this.touchObject;
     var xDelta = (e.clientX - updateTouch.startX);
     var targetPosX = updateTouch.originX + xDelta;
-    targetPosX = Math.min(targetPosX, 0);
-    targetPosX = Math.max(targetPosX, -this.state.maxScroll);
+    targetPosX = this.snapContent(targetPosX);
     updateTouch.originX = targetPosX;
+    updateTouch.dragging = false;
+    this.touchObject = Object.assign(this.touchObject, updateTouch);
+  }
+
+  snapContent(targetPosX) {
+    targetPosX = Math.max(targetPosX, this.state.scrollMin);
+    targetPosX = Math.min(targetPosX, this.state.scrollMax);
     var scrollContent = this.state.scrollContent;
     scrollContent.style.transform = "translate({x}px, 0)".replace("{x}", targetPosX);
-    this.setState({
-      dragging: false,
-      touchObject: updateTouch
-    });
+    return targetPosX;
   }
 
   handleClick(e) {
