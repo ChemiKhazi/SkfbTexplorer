@@ -93,8 +93,18 @@ class TextureSwap extends Component {
 
   resetInputs() {
     document.getElementById('swapImageFile').value = null;
+    document.getElementById('swapImageUrl').value = "";
     var preview = document.querySelector('#swapDropZone>img');
     preview.src = null;
+  }
+
+  componentDidUpdate() {
+    if (!this.props.edit === false && !this.props.edit.replaceUrl === false) {
+      if (this.props.edit.replaceUrl.startsWith('http')) {
+        var inputUrl = document.getElementById('swapImageUrl');
+        inputUrl.value = this.props.edit.replaceUrl;
+      }
+    }
   }
 
   componentDidMount() {

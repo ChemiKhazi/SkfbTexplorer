@@ -186,7 +186,7 @@ class App extends Component {
             return;
           app.swapTextureCommand(replaceFiltered[0].replaceUrl, texture);
         });
-        delete this.replaceTextures;
+        delete this['replaceTextures'];
       });
     });
   }
