@@ -13,10 +13,52 @@ class ModelOpen extends Component {
           <button onClick={()=>this.openModelUrl()}>Open</button>
         </div>
         <button className="open-button" onClick={()=>this.toggleShow()}>
-          <i className="fa fa-folder-open-o" aria-hidden="true"></i>
+          <i className="fa fa-folder-open" aria-hidden="true"></i>
         </button>
+        <button className='about-button' onClick={()=>this.showInfo()}>
+          <i className="fa fa-question-circle" aria-hidden="true"></i>
+        </button>
+        <div className='info-box closed' onClick={()=>this.closeInfo()}>
+          <div onClick={(e)=>this.interceptClick(e)}>
+            <h1>Sketchfab Texture Explorer</h1>
+            <p>
+            A tool to view and modify the textures on Sketchfab models.
+            </p>
+            <p>
+            Built by Jeiel Aranal (<a href='https://twitter.com/chemikhazi'>@chemikhazi</a>) with React.
+            </p>
+            <p>
+            If you like this utility, <a href="https://ko-fi.com/subjectnerd">buy me a coffee</a>!
+            </p>
+            <button onClick={()=>this.closeInfo()}>Close</button>
+          </div>
+        </div>
       </div>
     );
+  }
+
+  interceptClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.nativeEvent) {
+      e.nativeEvent.stopPropagation();
+    }
+  }
+
+  showInfo() {
+    var box = document.querySelector('#open-skfb-model>.info-box');
+    box.classList.remove('closed');
+    box.classList.add('transition');
+    setTimeout(()=>box.classList.remove('transition'), 1);
+  }
+  closeInfo() {
+    var box = document.querySelector('#open-skfb-model>.info-box');
+    box.classList.add('transition');
+    setTimeout(() => {
+      box.classList.remove('transition');
+      box.classList.add('closed');
+    }, 500);
   }
 
   openModelUrl() {
