@@ -140,8 +140,8 @@ class App extends Component {
         textures: updateTextures,
         focusIndex: -1
       });
+      this.rebuildUrlHistory();
     });
-    this.rebuildUrlHistory();
     this.setState({focusIndex: -1});
   }
 
@@ -164,7 +164,8 @@ class App extends Component {
       else
         urlParams.append(texParam, texture.replaceUrl);
     });
-    window.history.pushState({}, '', urlParams.toString());
+    window.history.pushState({}, '', '?' + urlParams.toString());
+    console.log(urlParams.toString());
   }
 
   getApiCallback(api) {
@@ -257,19 +258,18 @@ class App extends Component {
       var thumb_height = 0;
       var thumb_url = "";
 
+      var max_size = 0;
       var max_width = 0;
       var max_height = 0;
       var source_url = "";
       // Loop through possible images to find thumbnail and actual
       texture.images.forEach((img) => {
-        // Images with no option most likely candidate for source
-        if (Object.keys(img.options).length === 0) {
-          // Find the highest res one
-          if (img.width > max_width || img.height > max_height) {
-              max_width = img.width;
-              max_height = img.height;
-              source_url = img.url;
-          }
+        // Find the highest file size as the source url
+        if (img.size > max_size) {
+            max_size = img.size;
+            max_width = img.width;
+            max_height = img.height;
+            source_url = img.url;
         }
         // Images with options, try to find one 256 and below
         else if (img.width <= 256 && img.height <= 256 && !img.url.endsWith(".gz")) {
