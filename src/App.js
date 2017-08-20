@@ -262,26 +262,35 @@ class App extends Component {
       var max_width = 0;
       var max_height = 0;
       var source_url = "";
-      // Loop through possible images to find thumbnail and actual
-      texture.images.forEach((img) => {
-        // Find the highest file size as the source url
-        if (img.size > max_size) {
+      if (texture.images.length == 1) {
+        var texImg = texture.images[0];
+        max_width = texImg.width;
+        max_height = texImg.height;
+        source_url = texImg.url;
+        thumb_url = texImg.url;
+      }
+      else {
+        // Loop through possible images to find thumbnail and actual
+        texture.images.forEach((img) => {
+          // Find the highest file size as the source url
+          if (img.size > max_size) {
             max_size = img.size;
             max_width = img.width;
             max_height = img.height;
             source_url = img.url;
-        }
-        // Images with options, try to find one 256 and below
-        else if (img.width <= 256 && img.height <= 256 && !img.url.endsWith(".gz")) {
+          }
+          // Images with options, try to find one 256 and below
+          if (img.width <= 256 && img.height <= 256 && !img.url.endsWith(".gz")) {
             if (img.width > thumb_width || img.height > thumb_height) {
-                thumb_width = img.width;
-                thumb_height = img.height;
-                thumb_url = img.url;
+              thumb_width = img.width;
+              thumb_height = img.height;
+              thumb_url = img.url;
             }
-        }
-      });
-      if (max_width === thumb_width && max_height === thumb_height)
-        thumb_url = source_url;
+          }
+        });
+        if (max_width === thumb_width && max_height === thumb_height)
+          thumb_url = source_url;
+      }
 
       var textureData = texture_list[texture.uid]
       textureData.width = max_width;
