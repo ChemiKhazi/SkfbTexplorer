@@ -10,23 +10,12 @@ class App extends Component {
 
   constructor() {
     super();
+    this.defaultModel = 'a7cb34de4c044092b094d73953ab5acb';
 
-    var model_id = 'a7cb34de4c044092b094d73953ab5acb';
+    var model_id = this.defaultModel;
     var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('model'))
-        model_id = urlParams.get('model')
-
-    this.replaceTextures = [];
-    // "25 textures ought to be enough for anybody"
-    for (var i = 0; i < 25; i++) {
-      var paramName = "t" + i;
-      if (urlParams.has(paramName)) {
-        this.replaceTextures.push({
-          textureSlot: i,
-          replaceUrl: urlParams.get(paramName)
-        });
-      }
-    }
+      model_id = urlParams.get('model')
 
     this.state = {
       modelId: model_id,
@@ -103,10 +92,10 @@ class App extends Component {
   }
 
   swapTextureOperation(textureUrl) {
-    this.swapTextureOper(textureUrl, this.state.focusIndex);
+    this.swapTextureOpIndex(textureUrl, this.state.focusIndex);
   }
 
-  swapTextureOper(textureUrl, index){
+  swapTextureOpIndex(textureUrl, index){
     if (index < 0 || index >= this.state.textures.length)
       return;
 
@@ -119,6 +108,7 @@ class App extends Component {
         textures: updateTextures,
         focusIndex: -1
       });
+      self.rebuildUrlHistory();
     });
   }
 
@@ -133,30 +123,53 @@ class App extends Component {
   }
 
   resetTexture() {
-      var index = this.state.focusIndex;
-      var targetTexture = this.state.textures[index];
-      if (!targetTexture.replaceUrl)
+    var index = this.state.focusIndex;
+    var targetTexture = this.state.textures[index];
+    if (!targetTexture.replaceUrl)
+      return;
+
+    var targetUid = targetTexture.uid;
+    var self = this;
+
+    this.state.api.updateTexture(targetTexture.source_url, targetUid, (err, textureUid) => {
+      if (!err === false)
         return;
-
-      var targetUid = targetTexture.uid;
-      var self = this;
-
-      this.state.api.updateTexture(targetTexture.source_url, targetUid, (err, textureUid) => {
-        if (!err === false)
-          return;
-        var updateTextures = self.state.textures;
-        delete updateTextures[index]['replaceUrl'];
-        self.setState({
-          textures: updateTextures,
-          focusIndex: -1
-        });
+      var updateTextures = self.state.textures;
+      delete updateTextures[index]['replaceUrl'];
+      self.setState({
+        textures: updateTextures,
+        focusIndex: -1
       });
+    });
+    this.rebuildUrlHistory();
+    this.setState({focusIndex: -1});
+  }
 
-      this.setState({focusIndex: -1});
+  rebuildUrlHistory() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (this.state.modelId !== this.defaultModel) {
+      if (urlParams.has('model'))
+        urlParams.set('model', this.state.modelId);
+      else
+        urlParams.append('model', this.state.modelId);
+    }
+    this.state.textures.forEach((texture, idx) => {
+      var texParam = 't' + idx;
+      if (!texture.replaceUrl || texture.replaceUrl.startsWith('data')) {
+        urlParams.delete(texParam);
+        return;
+      }
+      if (urlParams.has(texParam))
+        urlParams.set(texParam, texture.replaceUrl);
+      else
+        urlParams.append(texParam, texture.replaceUrl);
+    });
+    window.history.pushState({}, '', urlParams.toString());
   }
 
   getApiCallback(api) {
     var app = this;
+    // Request materials
     api.getMaterialList((err, materials) => {
       if (!err === false)
       {
@@ -164,8 +177,9 @@ class App extends Component {
         console.error(err);
         return;
       }
-
+      // Process the materials to get the texture uids
       var textureList = app.processMaterialList(materials);
+      // Request textures
       api.getTextureList( (err, textures) => {
         if (!err === false)
         {
@@ -177,16 +191,15 @@ class App extends Component {
         app.setState({
           materials: materials,
           textures: textureList,
+          texActual: textures,
           api: api
         });
-        // Process replace textures
-        textureList.forEach((texture, texIdx) => {
-          var replaceFiltered = app.replaceTextures.filter((replaceTex) => replaceTex.textureSlot === texIdx);
-          if (replaceFiltered.length < 1)
+        // Process replaced textures to swap them
+        textureList.forEach((texture) => {
+          if (!texture.replaceUrl)
             return;
-          app.swapTextureCommand(replaceFiltered[0].replaceUrl, texture);
+          app.swapTextureCommand(texture.replaceUrl, texture);
         });
-        delete this['replaceTextures'];
       });
     });
   }
@@ -232,6 +245,8 @@ class App extends Component {
   }
 
   processTextureList(texture_list, textures) {
+    var urlParams = new URLSearchParams(window.location.search);
+
     var outputList = [];
     var texture_list_keys = Object.keys(texture_list);
     textures.forEach((texture) => {
@@ -276,9 +291,9 @@ class App extends Component {
       textureData.name = texture.name;
 
       var texIndex = outputList.length;
-      var replaceFiltered = this.replaceTextures.filter((replaceTex) => replaceTex.textureSlot == texIndex);
-      if (replaceFiltered.length > 0) {
-        textureData.replaceUrl = replaceFiltered[0].replaceUrl;
+      var paramName = "t" + texIndex;
+      if (urlParams.has(paramName)) {
+        textureData.replaceUrl = urlParams.get(paramName);
       }
       outputList.push(textureData);
     }); // End texture process loop
