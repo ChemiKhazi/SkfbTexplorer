@@ -28,6 +28,9 @@ class ModelOpen extends Component {
             Built by Jeiel Aranal (<a href='https://twitter.com/chemikhazi'>@chemikhazi</a>) with React.
             </p>
             <p>
+            Usage instructions are available <a href='https://github.com/ChemiKhazi/SkfbTexplorer'>in the Github repo</a>
+            </p>
+            <p>
             If you like this utility, <a href="https://ko-fi.com/subjectnerd">buy me a coffee</a>!
             </p>
             <button onClick={()=>this.closeInfo()}>Close</button>
