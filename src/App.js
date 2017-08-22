@@ -262,7 +262,7 @@ class App extends Component {
       var max_width = 0;
       var max_height = 0;
       var source_url = "";
-      if (texture.images.length == 1) {
+      if (texture.images.length === 1) {
         var texImg = texture.images[0];
         max_width = texImg.width;
         max_height = texImg.height;
